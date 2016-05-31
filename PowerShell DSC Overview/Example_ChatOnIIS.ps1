@@ -1,5 +1,8 @@
 ﻿#region Demo prep
 
+#Set PowerShell ISE Zoom to 150-175%
+$psISE.Options.Zoom = 175
+
 #Create folder for demo files 
 If (-not (Test-Path c:\demo_dsc))
     {New-Item -ItemType Directory -Path C:\demo_dsc}
@@ -10,8 +13,12 @@ Push-Location
 #Set location to the demo folder
 Set-Location -Path C:\demo_dsc
 
-#ENTER credentials for connecting to VMs
-$VM_cred = Get-Credential -Message "Enter VM credentials" -UserName "vmuser"
+#Set credentials for connecting to VMs
+$Pass = ConvertTo-SecureString "Qwerty123" -AsPlainText -Force
+$VM_cred = New-Object System.Management.Automation.PSCredential ("vmuser", $pass)
+
+#To comunicate with remote DSC manager need to create CIM instance
+$CIM = New-CimSession -ComputerName 10.10.10.1 -Credential $VM_cred
 
 #endregion
 
@@ -175,8 +182,6 @@ Start-DscConfiguration -Wait -Force -Verbose -Path C:\demo_dsc -Credential $VM_c
 Start-Process http://10.10.10.1
 
 #region Demo cleanup
-
-
 
 #Set PowerShell ISE Zoom back to 100%
 $psISE.Options.Zoom = 100
