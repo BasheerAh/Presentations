@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+  <?define ProductName = "WiX Advanced"?>
+  <?define ProductManufacter = "Awesome Manufacturer"?>
+  <?define ProductCode="*" ?>
+  <?define ProductUpgradeCode="c4c39839-d4db-4def-9d2b-56340d37b8d2" ?>
+</Include>

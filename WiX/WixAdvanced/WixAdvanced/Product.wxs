@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+   <!-- Use ?include to add include files (*.wxi) into installer -->
+  <!-- Use Wix variable to customize installer (own and standard: http://wixtoolset.org/documentation/manual/v3/votive/votive_project_references.html) -->
+  <!-- Can be set either via ?define or through wixproj -->  
+  <?include Configuration.wxi?>
+  <Product Id="*" Name="$(var.ProductName)" Language="1033" Version="$(var.ProductVersion)" Manufacturer="$(var.ProductManufacter)" UpgradeCode="$(var.ProductUpgradeCode)">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" Platform="x86"/>
+
+    <!-- One line for prevent downgrade and set up major upgrading -->
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." AllowSameVersionUpgrades="yes" />
+    
+    <!-- With help of preprocessor commands advanced construction might be built -->
+    <?if $(var.Configuration) != "Release" ?>
+      <?define InternalCab="no"?>
+    <?else?>
+      <?define InternalCab="yes"?>
+    <?endif?>
+    <MediaTemplate EmbedCab="$(var.InternalCab)"/>
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="DIR_MyProgram" Name="$(var.ProductName)" />
+        <Directory Id="ProgramMenuFolder">
+          <Directory Id="DIR_Shortcuts" Name="$(var.ProductName)" />
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <!--Features-->
+    <Feature Id="FileToInstallFeature" Title="Wix Basics Feature" Level="1">
+      <ComponentGroupRef Id="MainFiles" />
+    </Feature>
+
+    <!-- Adding UI here and also need to add WixUIExtension into References -->
+    <UIRef Id="WixUI_Minimal"/>
+
+      <!--
+    <?foreach arch in X86;AMD64?>
+    <Property Id='UNINSTALL_DRV_CMD_$(var.arch)'>
+      <RegistrySearch Id='UNINSTALL_DRV_CMD_$(var.arch)' Root='HKLM' Key='Software\$(var.ProductManufacter)\Driver' Name='UNINSTALL_DRV_CMD_$(var.arch)' Type='raw' />
+    </Property>
+    <?endforeach?>
+    -->
+      <Property Id="KillApp" Value="&quot;taskkill.exe&quot; /f /im notepad.exe" />
+      <CustomAction Id='KillApp' BinaryKey="WixCA" DllEntry="CAQuietExec" Execute="deferred" Return="ignore" Impersonate="no"/>
+
+      
+      <InstallExecuteSequence>
+        <Custom Action="KillApp" After="InstallInitialize">
+          <![CDATA[VersionNT > 601]]>
+        </Custom>
+
+      </InstallExecuteSequence>
+    
+  </Product>
+  
+</Wix>
