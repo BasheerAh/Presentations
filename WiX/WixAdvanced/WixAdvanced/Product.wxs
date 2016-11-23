@@ -17,7 +17,26 @@
       <?define InternalCab="yes"?>
     <?endif?>
     <MediaTemplate EmbedCab="$(var.InternalCab)"/>
+    
+    <!-- 
+    Variables custom = var, environment = env and system = sys, refer to wix.chm for more information
+    -->
+    <Property Id="CheckVAR" Value="$(var.InternalCab)"/>
+    <Property Id="CheckENV" Value="$(env.ChocolateyLastPathUpdate)"/>
+    <Property Id="CheckSYS" Value="$(sys.CURRENTDIR)"/>
 
+    <!-- Preprocessor functions -->
+    <?define x="1"?> 
+    <?define y="0"?>
+    <Property Id="CheckFUN" Value="$(fun.AutoVersion($(var.x).$(var.y))) "/>
+    
+    <!-- RegSearch -->    
+    <Property Id="DOTNETVERSION">
+      <RegistrySearch Id="Search_dotNETversion" Root="HKLM" Key="SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full" Name="Release" Type="raw" Win64="yes"/>
+    </Property>
+    
+    <!--Also exist: foreach, ifdef, ifndef-->
+    
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFilesFolder">
         <Directory Id="DIR_MyProgram" Name="$(var.ProductName)" />
@@ -26,7 +45,7 @@
         </Directory>
       </Directory>
     </Directory>
-
+    
     <!--Features-->
     <Feature Id="FileToInstallFeature" Title="Wix Basics Feature" Level="1">
       <ComponentGroupRef Id="MainFiles" />
